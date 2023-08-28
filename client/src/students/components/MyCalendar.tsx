@@ -9,7 +9,6 @@ import eventStyleGetter from "./EventStyleGetter";
 import useStudents from "../hooks/useStudents";
 import Spinner from "../../components/Spinner";
 import Error from "../../components/Error";
-import { useNavigate } from "react-router-dom";
 import { useUser } from "../../users/providers/UserProvider";
 import ROUTES from "../../routes/routesModel";
 
@@ -34,7 +33,6 @@ const MyCalendar: React.FC = () => {
     value,
   } = useStudents();
   const { isLoading, error, students } = value;
-  const navigate = useNavigate();
   const user = useUser();
 
   useEffect(() => {
@@ -73,8 +71,7 @@ const MyCalendar: React.FC = () => {
       );
       event.end = endDate;
       await handleUpdateStudent(event);
-      navigate(`${ROUTES.ROOT}`);
-      setTimeout(() => navigate(`${ROUTES.CALENDAR}`), 200);
+      await handleGetMyStudents();
     } else {
       setSelectedEvent(event);
       setDialog(true);
@@ -112,8 +109,7 @@ const MyCalendar: React.FC = () => {
       setDurationOfLesson("");
       setAllowedAbsences("");
       await handleCreateStudent(recurringEvents);
-      navigate(`${ROUTES.ROOT}`);
-      setTimeout(() => navigate(`${ROUTES.CALENDAR}`), 20);
+      await handleGetMyStudents();
     }
   };
 
@@ -147,8 +143,7 @@ const MyCalendar: React.FC = () => {
     console.log(event);
 
     await handleUpdateStudent(event);
-    navigate(`${ROUTES.ROOT}`);
-    setTimeout(() => navigate(`${ROUTES.CALENDAR}`), 200);
+    await handleGetMyStudents();
   };
 
   return (
