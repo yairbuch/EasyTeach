@@ -1,0 +1,4 @@
+[2023/08/18 10:26:54] PUT /students/send-email 500 - 6.098 MS
+[2023/08/18 10:31:11] PUT /students/send-email 500 - 3.349 MS
+[2023/08/18 10:37:06] PUT /students/send-email 500 - 2.295 MS
+[2023/08/18 15:38:24] PATCH /students/64df1f1117efcbd74b990125 400 - 36.858 MS
