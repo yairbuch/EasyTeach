@@ -9,9 +9,6 @@ import eventStyleGetter from "./EventStyleGetter";
 import useStudents from "../hooks/useStudents";
 import Spinner from "../../components/Spinner";
 import Error from "../../components/Error";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../../users/providers/UserProvider";
-import ROUTES from "../../routes/routesModel";
 
 const localizer = momentLocalizer(moment);
 
@@ -26,6 +23,8 @@ const MyCalendar: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [inputNewDateValue, setInputNewDateValue] = useState("");
   const [isUpdateButtonClicked, setisUpdateButtonClicked] = useState(false);
+  const [isChangeDayButtonClicked, setisChangeDayButtonClicked] =
+    useState(false);
   const [inputNewHourValue, setInputNewHourValue] = useState("");
   const {
     handleCreateStudent,
@@ -34,8 +33,6 @@ const MyCalendar: React.FC = () => {
     value,
   } = useStudents();
   const { isLoading, error, students } = value;
-  const navigate = useNavigate();
-  const user = useUser();
 
   useEffect(() => {
     handleGetMyStudents().then(() => {
@@ -74,6 +71,7 @@ const MyCalendar: React.FC = () => {
       event.end = endDate;
       await handleUpdateStudent(event);
       await handleGetMyStudents();
+    } else if (isChangeDayButtonClicked) {
     } else {
       setSelectedEvent(event);
       setDialog(true);
@@ -161,6 +159,29 @@ const MyCalendar: React.FC = () => {
             One time change
           </button>
           {isUpdateButtonClicked && (
+            <div>
+              <input
+                type="date"
+                value={inputNewDateValue}
+                onChange={(e) => setInputNewDateValue(e.target.value)}
+              />
+              <input
+                type="time"
+                value={inputNewHourValue}
+                onChange={(e) => setInputNewHourValue(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+        <div>
+          <button
+            onClick={() =>
+              setisChangeDayButtonClicked(!isChangeDayButtonClicked)
+            }
+          >
+            Permanent time change
+          </button>
+          {isChangeDayButtonClicked && (
             <div>
               <input
                 type="date"
