@@ -1,8 +1,0 @@
-[2023/07/26 10:17:39] GET /students/my-students 403 - 6.089 MS
-[2023/07/26 10:17:39] GET /students/my-students 403 - 1.274 MS
-[2023/07/26 10:17:39] GET /students/my-students 403 - 1.083 MS
-[2023/07/26 10:17:40] GET /students/my-students 403 - 0.921 MS
-[2023/07/26 14:51:07] PUT /students/64c0cee21e6e9f98c8b854a9 400 - 14.806 MS
-[2023/07/26 14:52:22] PUT /students/64c107f98cfd118f5adabbff 400 - 5.521 MS
-[2023/07/26 14:52:40] PUT /students/64c107f98cfd118f5adabbff 400 - 9.459 MS
-[2023/07/26 14:54:01] PUT /students/64c107f98cfd118f5adabbfe 400 - 10.930 MS

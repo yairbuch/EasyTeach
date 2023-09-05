@@ -73,8 +73,7 @@ const MyCalendar: React.FC = () => {
       );
       event.end = endDate;
       await handleUpdateStudent(event);
-      navigate(`${ROUTES.ROOT}`);
-      setTimeout(() => navigate(`${ROUTES.CALENDAR}`), 200);
+      await handleGetMyStudents();
     } else {
       setSelectedEvent(event);
       setDialog(true);
@@ -112,8 +111,7 @@ const MyCalendar: React.FC = () => {
       setDurationOfLesson("");
       setAllowedAbsences("");
       await handleCreateStudent(recurringEvents);
-      navigate(`${ROUTES.ROOT}`);
-      setTimeout(() => navigate(`${ROUTES.CALENDAR}`), 20);
+      await handleGetMyStudents();
     }
   };
 
@@ -147,8 +145,7 @@ const MyCalendar: React.FC = () => {
     console.log(event);
 
     await handleUpdateStudent(event);
-    navigate(`${ROUTES.ROOT}`);
-    setTimeout(() => navigate(`${ROUTES.CALENDAR}`), 200);
+    await handleGetMyStudents();
   };
 
   return (
