@@ -71,6 +71,9 @@ const MyCalendar: React.FC = () => {
       event.end = endDate;
       await handleUpdateStudent(event);
       await handleGetMyStudents();
+      setisUpdateButtonClicked(false);
+      setInputNewHourValue("");
+      setInputNewDateValue("");
     } else if (isChangeDayButtonClicked) {
     } else {
       setSelectedEvent(event);
