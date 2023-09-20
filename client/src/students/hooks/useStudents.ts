@@ -4,6 +4,7 @@ import {
   createStudent,
   deleteStudent,
   editStudent,
+  editStudentDay,
   editStudentDetails,
   editStudentPaymentRequst,
   getDeletedStudents,
@@ -155,6 +156,20 @@ const useStudents = () => {
     }
   }, []);
 
+  const handleUpdateStudentDay = useCallback(
+    async (studentFromClient: Event[]) => {
+      try {
+        setLoading(true);
+        const studentToServer = await editStudentDay(studentFromClient);
+        requestStatus(false, null, null, studentToServer);
+        snack("success", "The lesson's day updated correctly");
+      } catch (error) {
+        if (typeof error === "string") return requestStatus(false, error, null);
+      }
+    },
+    []
+  );
+
   const handleEditedDetailsStudent = useCallback(
     async (studentFromClient: studentDetailsFromClientType) => {
       try {
@@ -250,6 +265,7 @@ const useStudents = () => {
     handleSendEmail,
     handleGetEmailList,
     handleGetDeletedStudents,
+    handleUpdateStudentDay,
   };
 };
 

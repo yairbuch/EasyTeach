@@ -99,6 +99,40 @@ const EditStudent = async (req, res) => {
   }
 };
 
+const EditStudentDay = async (req, res) => {
+  try {
+    const student = req.body;
+    console.log(student);
+    const user = req.user;
+    if (user._id !== student[0].user_id) {
+      const message =
+        "Authorization Error: Only the user who created the student can update its details";
+      return handleError(res, 403, message);
+    }
+
+    const { error } = validateStudent(student);
+    if (error)
+      return handleError(res, 400, `joi error: ${error.details[0].message}`);
+
+    const normalizedEditedStudent = await normalizeStudents(student);
+
+    const newStudent = await Student.findOneAndUpdate(
+      { "MyArray.id": student[0].id },
+      { $set: { MyArray: normalizedEditedStudent.MyArray } },
+      { new: true }
+    );
+
+    if (!newStudent) {
+      return handleError(res, 404, "Object not found.");
+    }
+
+    Promise.resolve(newStudent);
+    return res.send(newStudent);
+  } catch (error) {
+    return handleError(res, 500, `Mongoose Error: ${error.message}`);
+  }
+};
+
 const EditStudentDetails = async (req, res) => {
   try {
     const student = req.body;
@@ -326,3 +360,4 @@ exports.verifyEmail = verifyEmail;
 exports.sendEmail = sendEmail;
 exports.getEmaillist = getEmaillist;
 exports.getDeletedStudents = getDeletedStudents;
+exports.EditStudentDay = EditStudentDay;

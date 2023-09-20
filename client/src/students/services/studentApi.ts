@@ -69,6 +69,18 @@ export const editStudent = async (normalizedStudent: Event[]) => {
   }
 };
 
+export const editStudentDay = async (normalizedStudent: Event[]) => {
+  try {
+    const { data } = await axios.post(
+      `${apiUrl}/students/edit-new-day`,
+      normalizedStudent
+    );
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) return Promise.reject(error.message);
+  }
+};
+
 export const editStudentDetails = async (
   normalizedStudent: studentDetailsToServerType[]
 ) => {

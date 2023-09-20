@@ -30,6 +30,7 @@ const MyCalendar: React.FC = () => {
     handleCreateStudent,
     handleGetMyStudents,
     handleUpdateStudent,
+    handleUpdateStudentDay,
     value,
   } = useStudents();
   const { isLoading, error, students } = value;
@@ -45,7 +46,6 @@ const MyCalendar: React.FC = () => {
             absences: event.absences ? new Date(event.absences) : null,
           }))
         );
-
         setEvents(allEvents);
       }
     });
@@ -75,6 +75,29 @@ const MyCalendar: React.FC = () => {
       setInputNewHourValue("");
       setInputNewDateValue("");
     } else if (isChangeDayButtonClicked) {
+      const [hours, minutes] = inputNewHourValue.split(":");
+      const startDate = new Date(inputNewDateValue);
+      startDate.setHours(parseInt(hours, 10));
+      startDate.setMinutes(parseInt(minutes, 10));
+      const gap = startDate.getTime() - event.start.getTime();
+      const num = Math.floor(gap / (1000 * 3600 * 24));
+
+      const allStudentEvents = events.filter(
+        (student) => student.id === event.id
+      );
+
+      allStudentEvents.map(
+        (lesson) =>
+          lesson.start.setDate(lesson.start.getDate() + num) &&
+          (lesson.end = new Date(
+            lesson.start.getTime() + lesson.durationOfLesson * 60000
+          ))
+      );
+      await handleUpdateStudentDay(allStudentEvents);
+      await handleGetMyStudents();
+      setisChangeDayButtonClicked(false);
+      setInputNewHourValue("");
+      setInputNewDateValue("");
     } else {
       setSelectedEvent(event);
       setDialog(true);
@@ -157,6 +180,7 @@ const MyCalendar: React.FC = () => {
         </Typography>
         <div>
           <button
+            className="update_buttons"
             onClick={() => setisUpdateButtonClicked(!isUpdateButtonClicked)}
           >
             One time change
@@ -178,6 +202,7 @@ const MyCalendar: React.FC = () => {
         </div>
         <div>
           <button
+            className="update_buttons"
             onClick={() =>
               setisChangeDayButtonClicked(!isChangeDayButtonClicked)
             }

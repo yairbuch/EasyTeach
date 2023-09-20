@@ -11,6 +11,7 @@ const {
   sendEmail,
   getEmaillist,
   getDeletedStudents,
+  EditStudentDay,
 } = require("../controllers/studentsController");
 const auth = require("../../auth/authService");
 const router = express.Router();
@@ -26,5 +27,6 @@ router.put("/:studentId", auth, EditStudentDetails);
 router.put("/payment-requst/:studentId", auth, EditStudentPaymentRequst);
 router.delete("/:studentId", auth, DeleteStudent);
 router.get("/emails-list/:email", auth, getEmaillist);
+router.post("/edit-new-day", auth, EditStudentDay);
 
 module.exports = router;

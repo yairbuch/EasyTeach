@@ -36,3 +36,9 @@ body {
     margin-bottom: 40px;
   }
 }
+
+.update_buttons {
+  padding: 5px;
+
+  margin-bottom: 3px;
+}
