@@ -88,6 +88,7 @@ const MyCalendar: React.FC = () => {
 
       allStudentEvents.map(
         (lesson) =>
+          lesson.start >= event.start &&
           lesson.start.setDate(lesson.start.getDate() + num) &&
           (lesson.end = new Date(
             lesson.start.getTime() + lesson.durationOfLesson * 60000
