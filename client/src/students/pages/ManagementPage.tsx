@@ -36,7 +36,6 @@ const Management = () => {
   useEffect(() => {
     handleGetMyStudents();
   }, []);
-  console.log(filteredStudents);
 
   const { user } = useUser();
 

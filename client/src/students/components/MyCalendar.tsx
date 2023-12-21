@@ -26,6 +26,7 @@ const MyCalendar: React.FC = () => {
   const [isChangeDayButtonClicked, setisChangeDayButtonClicked] =
     useState(false);
   const [inputNewHourValue, setInputNewHourValue] = useState("");
+
   const {
     handleCreateStudent,
     handleGetMyStudents,
@@ -58,7 +59,74 @@ const MyCalendar: React.FC = () => {
     setSelectedStartDate(slotInfo.start);
   };
 
-  const handleEventClick = async (event: Event) => {
+  const handleEventCreation = async () => {
+    if (selectedStartDate && eventName && price) {
+      const day = moment(selectedStartDate).day();
+      const recurringEvents: Event[] = [];
+
+      let currentDate = moment(selectedStartDate);
+
+      while (currentDate.year() <= new Date().getFullYear() + 1) {
+        recurringEvents.push({
+          title: eventName,
+          start: currentDate.toDate(),
+          end: moment(currentDate).add(durationOfLesson, "minutes").toDate(),
+          price: +price,
+          isAttended: false,
+          payment: 0,
+          absences: null,
+          id: events.length + 1,
+          allowedAbsences: +allowedAbsences,
+          durationOfLesson: +durationOfLesson,
+        });
+
+        currentDate = moment(currentDate).add(1, "week").day(day);
+      }
+
+      setEvents((prevEvents) => [...prevEvents, ...recurringEvents]);
+      setSelectedStartDate(null);
+      setEventName("");
+      setPrice("");
+      setDurationOfLesson("");
+      setAllowedAbsences("");
+      await handleCreateStudent(recurringEvents);
+      await handleGetMyStudents();
+    }
+  };
+
+  const handleEventFromDialog = async (action: string, event: Event) => {
+    if (action === "lessonTookPlace") {
+      event.title = event.title.concat("✅");
+      event.title = event.title.replace(/❌|❗/g, "");
+      event.payment = event.price;
+      event.isAttended = true;
+      event.absences = null;
+    } else if (action === "lessonCancelledByStudent") {
+      event.isAttended = false;
+      event.title = event.title.concat("❌");
+      event.title = event.title.replace("✅", "");
+      event.payment = 0;
+      event.absences = event.start;
+      const allStudentlessons = events.filter((obj) => obj.id === event.id);
+      const cancelledLessons = allStudentlessons.filter(
+        (obj) => obj.absences !== null
+      );
+      if (cancelledLessons.length > event.allowedAbsences) {
+        event.payment = event.price;
+        event.title = event.title.replace("❌", "❗");
+      }
+    } else if (action === "reset") {
+      event.isAttended = false;
+      event.title = event.title.replace(/✅|❌|❗/g, "");
+      event.payment = 0;
+      event.absences = null;
+    }
+
+    await handleUpdateStudent(event);
+    await handleGetMyStudents();
+  };
+
+  const handleUpdateDateButtons = async (event: Event) => {
     if (isUpdateButtonClicked) {
       const [hours, minutes] = inputNewHourValue.split(":");
       const startDate = new Date(inputNewDateValue);
@@ -103,74 +171,6 @@ const MyCalendar: React.FC = () => {
       setSelectedEvent(event);
       setDialog(true);
     }
-  };
-
-  const handleEventCreation = async () => {
-    if (selectedStartDate && eventName && price) {
-      const day = moment(selectedStartDate).day();
-      const recurringEvents: Event[] = [];
-
-      let currentDate = moment(selectedStartDate);
-
-      while (currentDate.year() <= new Date().getFullYear() + 1) {
-        recurringEvents.push({
-          title: eventName,
-          start: currentDate.toDate(),
-          end: moment(currentDate).add(durationOfLesson, "minutes").toDate(),
-          price: +price,
-          isAttended: false,
-          payment: 0,
-          absences: null,
-          id: events.length + 1,
-          allowedAbsences: +allowedAbsences,
-          durationOfLesson: +durationOfLesson,
-        });
-
-        currentDate = moment(currentDate).add(1, "week").day(day);
-      }
-
-      setEvents((prevEvents) => [...prevEvents, ...recurringEvents]);
-      setSelectedStartDate(null);
-      setEventName("");
-      setPrice("");
-      setDurationOfLesson("");
-      setAllowedAbsences("");
-      await handleCreateStudent(recurringEvents);
-      await handleGetMyStudents();
-    }
-  };
-
-  const handleEvent = async (action: string, event: Event) => {
-    if (action === "lessonTookPlace") {
-      event.title = event.title.concat("✅");
-      event.title = event.title.replace(/❌|❗/g, "");
-      event.payment = event.price;
-      event.isAttended = true;
-      event.absences = null;
-    } else if (action === "lessonCancelledByStudent") {
-      event.isAttended = false;
-      event.title = event.title.concat("❌");
-      event.title = event.title.replace("✅", "");
-      event.payment = 0;
-      event.absences = event.start;
-      const allStudentlessons = events.filter((obj) => obj.id === event.id);
-      const cancelledLessons = allStudentlessons.filter(
-        (obj) => obj.absences !== null
-      );
-      if (cancelledLessons.length > event.allowedAbsences) {
-        event.payment = event.price;
-        event.title = event.title.replace("❌", "❗");
-      }
-    } else if (action === "reset") {
-      event.isAttended = false;
-      event.title = event.title.replace(/✅|❌|❗/g, "");
-      event.payment = 0;
-      event.absences = null;
-    }
-    console.log(event);
-
-    await handleUpdateStudent(event);
-    await handleGetMyStudents();
   };
 
   return (
@@ -270,14 +270,14 @@ const MyCalendar: React.FC = () => {
           startAccessor="start"
           endAccessor="end"
           style={{ height: "80vh", width: "80vw" }}
-          onSelectEvent={handleEventClick}
+          onSelectEvent={handleUpdateDateButtons}
           eventPropGetter={eventStyleGetter}
           step={15}
         />
         <FormDialogCalendar
           isDialogOpen={isDialogOpen}
           onCloseDialog={() => setDialog(false)}
-          onActionSelected={handleEvent}
+          onActionSelected={handleEventFromDialog}
           selectedEvent={selectedEvent}
         />
       </Container>
